@@ -1,12 +1,27 @@
 import React, { Component } from 'react';
 
 import TechItem from './TechItem';
+import { runInThisContext } from 'vm';
 
 class TechList extends Component {
   state = {
     newTech: '',
-    techs: ['Node.js', 'React.js', 'React Native']
+    techs: []
   };
+
+  componentDidMount() {
+    const techs = localStorage.getItem('techs');
+
+    if (techs) {
+      this.setState({ techs: JSON.parse(techs) });
+    }
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (prevState.techs !== this.state.techs) {
+      localStorage.setItem('techs', JSON.stringify(this.state.techs));
+    }
+  }
 
   handleInputChange = e => {
     this.setState({ newTech: e.target.value });
@@ -14,7 +29,6 @@ class TechList extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state.newTech);
     this.setState({
       techs: [...this.state.techs, this.state.newTech],
       newTech: ''
@@ -38,7 +52,6 @@ class TechList extends Component {
                 onDelete={() => this.handleDelete(tech)}
               />
             ))}
-            <TechItem />
           </ul>
           <input
             type="text"
